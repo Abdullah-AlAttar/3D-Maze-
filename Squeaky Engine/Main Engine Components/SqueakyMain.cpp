@@ -21,17 +21,21 @@
 #include <chrono>
 #include <thread>
 #include "..\Audio Manager\AudioManager.h"
-#include <ik\irrKlang.h>
+#include <irrKlang.h>
 #include "UtilityFunctions.h"
 #include "..\Entities\Obstacle.h"
 #include <glm\gtc\noise.hpp>
 #include "Util.h"
 #include "..\\Entities\SpeedPowerUp.h"
+#include <filesystem>
+#include <random>       // std::default_random_engine
+#include <chrono>    
 
-enum GameMode {EAZY,HARD};
-enum CameraMode{FIXED_MODE,FPS_MODE,TP_MODE,FREE_MODE};
-GameMode gameMode = GameMode::HARD;
+enum GameMode { EAZY, HARD };
+enum CameraMode { FIXED_MODE, FPS_MODE, TP_MODE, FREE_MODE };
+GameMode gameMode = GameMode::EAZY;
 CameraMode camMode = CameraMode::FPS_MODE;
+
 
 using namespace  Util;
 int main()
@@ -52,7 +56,7 @@ int main()
 	audioManager->Play2DSound(path[rand()%5], true);
 	int seed = rand();
 
-	MazeGenerator mazeGenerator(50,20, seed, 35);
+	MazeGenerator mazeGenerator(50, 20, seed, 35);
 	mazeGenerator.GenerateMap();
 
 	unique_ptr<WindowManager> window(new WindowManager());
@@ -70,19 +74,19 @@ int main()
 	shader.LoadFromFile(GL_VERTEX_SHADER, "Shaders\\vs.glsl");
 	shader.LoadFromFile(GL_FRAGMENT_SHADER, "Shaders\\fs.glsl");
 	shader.CreateAndLinkProgram();
-	RawModel moonRawModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("Assests\\Models\\moon\\moon.obj"));
-	RawModel planeRawModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("Assests\\Models\\plane\\plane1.obj"));
-	RawModel boxModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("Assests\\Models\\Box\\box.obj"));
-	RawModel obstacleModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("Assests\\Models\\obstacle\\obstacle.obj"));
-	RawModel capsuleModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("Assests\\Models\\capsule\\capsule.obj"));
-	RawModel skyeboxModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("Assests\\Models\\skybox\\skybox.obj"));
+	RawModel moonRawModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\moon\\moon.obj"));
+	RawModel planeRawModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\plane\\plane1.obj"));
+	RawModel boxModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\Box\\box.obj"));
+	RawModel obstacleModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\obstacle\\obstacle.obj"));
+	RawModel capsuleModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\capsule\\capsule.obj"));
+	RawModel skyeboxModel = meshLoader->LoadToVAO(ModelMesh::LoadModel("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\skybox\\skybox.obj"));
 	//Texture texture(meshLoader->TextureFromFile("Assests\\Textures\\mario.png"));
-	Texture moonTexture(meshLoader->TextureFromFile("Assests\\Models\\moon\\moontex.jpg"));
-	Texture planeTexture(meshLoader->TextureFromFile("Assests\\Models\\plane\\black.jpg"));
-	Texture boxTexture(meshLoader->TextureFromFile("Assests\\Models\\Box\\box.png"));
-	Texture obstacleTexture(meshLoader->TextureFromFile("Assests\\Models\\moon\\moontex.jpg"));
-	Texture capsuleTexture(meshLoader->TextureFromFile("Assests\\Models\\plane\\download.jpg"));
-	Texture skyeboxTexture(meshLoader->TextureFromFile("Assests\\Models\\skybox\\skybox.png"));
+	Texture moonTexture(meshLoader->TextureFromFile("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\moon\\moontex.jpg"));
+	Texture planeTexture(meshLoader->TextureFromFile("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\plane\\black.jpg"));
+	Texture boxTexture(meshLoader->TextureFromFile("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\Box\\box.png"));
+	Texture obstacleTexture(meshLoader->TextureFromFile("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\moon\\moontex.jpg"));
+	Texture capsuleTexture(meshLoader->TextureFromFile("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\plane\\download.jpg"));
+	Texture skyeboxTexture(meshLoader->TextureFromFile("C:\\Users\\runmd\\Source\\Repos\\testing_opengl\\testing_opengl\\Assests\\Models\\skybox\\skybox.png"));
 	TexturedModel moonTexModel(moonRawModel, moonTexture);
 	TexturedModel planeTexturedModel(planeRawModel, planeTexture);
 	TexturedModel boxTexturedModel(boxModel, boxTexture);
@@ -91,7 +95,7 @@ int main()
 	TexturedModel skyeboxTexturedModel(skyeboxModel, skyeboxTexture);
 	GameObject box(boxTexturedModel, Transform(vec3(0, 1.0f, 0), vec3(0, 0, 0), vec3(1, 2, 1)));
 	GameObject moon(moonTexModel, Transform(vec3(0, -5.0f, 0), vec3(0, 0, 0), vec3(1, 2, 1)));
-	GameObject skybox(skyeboxTexturedModel, Transform(vec3(0, -5.0f, 0), vec3(0, 0, 0), vec3(4, 4,4)));
+	GameObject skybox(skyeboxTexturedModel, Transform(vec3(0, -5.0f, 0), vec3(0, 0, 0), vec3(4, 4, 4)));
 	GameObject plane(planeTexturedModel, Transform(vec3(0, 0, 0), vec3(0, 0, 0), vec3(1, 1, 1)));
 	sceneManager->gameObjects.push_back(&plane);
 	sceneManager->gameObjects.push_back(&skybox);
@@ -102,7 +106,7 @@ int main()
 	List<GameObject *>mazeBoxes;
 	List<BoxCollider> mazeBoxexColliders;
 	List<pair<float, float>> scales;
-	GameObject *tmpBox;
+	GameObject *tmpBox = NULL;
 	for (int i = 0; i < mazeGenerator.GetWidth(); ++i)
 	{
 		for (int j = 0; j < mazeGenerator.GetHeight(); ++j)
@@ -122,7 +126,7 @@ int main()
 			}
 		}
 	}
-	
+
 	player->gameObject->transform.position = mazeGenerator.GetStartPosition();
 	/*tmpBox = new GameOjbect(boxTexturedModel, Transform(vec3(-mazeGenerator.GetWidth() / 2 + mazeGenerator.GetWidth() - 1.0f, 1, mazeGenerator.GetHeight() / 2), vec3(0, 0, 0), vec3(mazeGenerator.GetWidth(), 1, 1)));
 	tmpBox->name = "box" + to_string(nameCnt++);
@@ -150,7 +154,7 @@ int main()
 	for (int i = 0; i < availablePathes.size(); ++i)
 	{
 		_obstacles.push_back(Obstacle(obstacleTexturedModel,
-			Transform(availablePathes[i].start, VECTOR_ZERO, vec3(0.9f,0.9f,0.9f)),
+			Transform(availablePathes[i].start, VECTOR_ZERO, vec3(0.9f, 0.9f, 0.9f)),
 			(availablePathes[i].start.z - availablePathes[i].end.z) == 0));
 	}
 
@@ -189,7 +193,7 @@ int main()
 
 		"spotLight.position","spotLight.direction","spotLight.ambient",	"spotLight.diffuse","spotLight.specular",
 		"spotLight.constant","spotLight.linear","spotLight.quadratic","spotLight.cutOff","spotLight.outerCutOff",
-	});
+		});
 	shader.Use();
 	shader.SetUniform(shader("material.ambient"), vec3(0.6f, 0.4f, 0.31f));
 	shader.SetUniform(shader("material.diffuse"), vec3(1.0f, 0.4f, 0.4f));
@@ -216,7 +220,7 @@ int main()
 	shader.SetPointLightUniforms(pl4, 3);
 	shader.SetDirectionalLightUniforms(dr);
 	shader.SetSpotLightUniforms(sl);
-	
+
 #pragma endregion
 
 	fixedCam.SetupProjectionMatrix(window->WIDTH / window->HEIGHT*1.0f, 0.1f, 900.0f);
@@ -227,21 +231,30 @@ int main()
 	vec3 startPosition = mazeGenerator.GetStartPosition() + vec3(-5, 0, 0);
 	float returnToStartPositionPercent = 0;
 	float timeToReturnToStartPosition = 2;
-	float changingMapTime = 3;
+	float changingMapTime = 4;
 	float changingMapPercent = 0;
 	bool inc = true;
 	float percent = 0;
 	float drawCounter = 0;
 	bool doDrawing = true, playedOnce = false;
 	int speedBoost = 3;
+	bool step1 = true;
 	List<vec3> currentTransforms;
 	List<vec3> targetTranforms;
+	List<vec3> originalTransforms;
+
+	vec3 centerPosition;
+	for (int i = 0; i < mazeBoxes.size(); ++i)
+	{
+		centerPosition += mazeBoxes[i]->transform.position;
+	}
+	centerPosition /= mazeBoxes.size();
 	while (window->IsRunning())
 	{
 		shader.Use();
 		Time::Update();
 		window->BeginUpdate();
-	
+
 		if (Input::GetKeyDown(GLFW_KEY_R))
 		{
 			currentTransforms.clear();
@@ -251,10 +264,22 @@ int main()
 			mazeGenerator.GenerateMap();
 			for (int i = 0; i < mazeBoxes.size(); ++i)
 			{
-					currentTransforms.push_back(mazeBoxes[i]->transform.position);
+				
+				originalTransforms.push_back(mazeBoxes[i]->transform.position);
+			}
+			int i = 0;
+			double step = 2 * 3.14 / mazeBoxes.size();
+			for (double angle = 0; angle < 2 * 3.14 && i < mazeBoxes.size(); angle += step)
+			{
+				auto r = mazeGenerator.GetHeight() + mazeGenerator.GetWidth();
+				auto pX = centerPosition.x + r * glm::cos(angle);
+				auto pY = centerPosition.z + r * glm::sin(angle);
+				//currentTransforms.push_back(mazeBoxes[i]->transform.position + vec3(rand() % 25 - 12, 0, rand() % 25 - 12));
+				currentTransforms.push_back(vec3(pX, mazeBoxes[i++]->transform.position.y, pY));
 			}
 			mazeBoxes.clear();
 			mazeBoxexColliders.clear();
+			originalTransforms.clear();
 			for (int i = 0; i < mazeGenerator.GetWidth(); ++i)
 			{
 				for (int j = 0; j < mazeGenerator.GetHeight(); ++j)
@@ -262,10 +287,10 @@ int main()
 					if (mazeGenerator.mMaze[i][j] == 1)
 					{
 						targetTranforms.push_back(vec3(-mazeGenerator.GetWidth() / 2 + i * 2, 1, mazeGenerator.GetHeight() / 2 + j * 2));
-				
-						tmpBox = new GameObject(boxTexturedModel,Transform( targetTranforms[i], 
-							vec3(0, 0, 0), 
-							glm::vec3(1, 6 * (glm::perlin(glm::vec2((i + 1) / 16.0f, (j + 1) / 16.0f)) + 1),1)));
+
+						tmpBox = new GameObject(boxTexturedModel, Transform(targetTranforms[i],
+							vec3(0, 0, 0),
+							glm::vec3(1, 6 * (glm::perlin(glm::vec2((i + 1) / 16.0f, (j + 1) / 16.0f)) + 1), 1)));
 						mazeBoxes.push_back(tmpBox);
 						mazeBoxexColliders.push_back(BoxCollider(targetTranforms[targetTranforms.size() - 1] - VECTOR_ONE,
 							targetTranforms[targetTranforms.size() - 1] + VECTOR_ONE,
@@ -299,16 +324,52 @@ int main()
 						Transform(emptyPositions[i], vec3(90, 0, -90), vec3(0.2f, 0.2f, 0.6f))));
 				}
 			}
+			std::shuffle(currentTransforms.begin(), currentTransforms.end(), std::default_random_engine(seed));
+		
 		}
 		if (player->playerState == PlayerState::CHANGING_MAP)
 		{
-			if (changingMapPercent > changingMapTime)
-				player->playerState = PlayerState::MOVING;
-		//	cout << mazeBoxes.size() << " " << currentTransforms.size() << " " << targetTranforms.size() << endl;
-			for (int i = 0; i < currentTransforms.size(); ++i)
+			int i;
+
+			//	cout << mazeBoxes.size() << " " << currentTransforms.size() << " " << targetTranforms.size() << endl;
+			if (step1)
 			{
-				mazeBoxes[i]->transform.position = glm::mix(currentTransforms[i], targetTranforms[i], changingMapPercent/changingMapTime);
+				for (i = 0; i < min(currentTransforms.size(), mazeBoxes.size()); ++i)
+				{
+					mazeBoxes[i]->transform.position = glm::mix(originalTransforms[i], currentTransforms[i], changingMapPercent / changingMapTime);
+				}
+				for (; i < mazeBoxes.size(); ++i)
+				{
+					mazeBoxes[i]->transform.position = targetTranforms[i];
+				}
 			}
+			else
+			{
+				for (i = 0; i < min(currentTransforms.size(), mazeBoxes.size()); ++i)
+				{
+					mazeBoxes[i]->transform.position = glm::mix(currentTransforms[i], targetTranforms[i], changingMapPercent / changingMapTime);
+				}
+				for (; i < mazeBoxes.size(); ++i)
+				{
+					mazeBoxes[i]->transform.position = targetTranforms[i];
+				}
+			}
+			if (changingMapPercent > changingMapTime)
+				if (step1)
+				{
+					changingMapPercent = 0;
+					step1 = false;
+				}
+				else
+				{
+					player->playerState = PlayerState::MOVING;
+					step1 = true;
+					for (i = 0; i < min(currentTransforms.size(), mazeBoxes.size()); ++i)
+					{
+						mazeBoxes[i]->transform.position = targetTranforms[i];
+					}
+				}
+			cout << changingMapPercent << endl;
 			changingMapPercent += Time::GetDeltaTime();
 		}
 #pragma region handling camera modes 
@@ -338,7 +399,7 @@ int main()
 			renderer->Prepare(fpsCam.GetViewMatrix(), fpsCam.GetProjectionMatrix());
 			shader.SetUniform(shader("viewPos"), fpsCam.GetCameraPosition());
 			//	player->gameObject->transform.position = fpsCam.GetCameraPosition();
-			fpsCam.SetCameraPosition(player->gameObject->transform.position+VECTOR_UP*1.5f);
+			fpsCam.SetCameraPosition(player->gameObject->transform.position + VECTOR_UP * 1.5f);
 			sl.position = fpsCam.GetCameraPosition();
 			sl.direction = fpsCam.GetCameraFront();
 			shader.SetUniform(shader("spotLight.position"), sl.position);
@@ -346,14 +407,14 @@ int main()
 		}
 		else if (camMode == CameraMode::FREE_MODE)
 		{
-			renderer->Prepare(freeCam.GetViewMatrix(), freeCam.GetProjectionMatrix());	
+			renderer->Prepare(freeCam.GetViewMatrix(), freeCam.GetProjectionMatrix());
 			sl.position = VECTOR_UP * 100.0f;
 			shader.SetUniform(shader("spotLight.position"), sl.position);
 			shader.SetUniform(shader("viewPos"), freeCam.GetCameraPosition());
 		}
-		
+
 #pragma endregion
-		
+
 		//defaultLight.position = player->gameObject->transform.position + vec3(0, 3, 0);
 		//shader.SetUniform(shader("defaultLight.position"), defaultLight.position);
 		//	moonGameOjbect.transform.RotateAround(vec3(mazeGenerator.GetWidth(),0,mazeGenerator.GetHeight()), VECTOR_FORWARD,15, angle);
@@ -363,7 +424,8 @@ int main()
 		{
 			deathPosition = player->gameObject->transform.position;
 			player->playerState = PlayerState::DEAD;
-			audioManager->Play2DSound("Assests\\audio\\nonono.ogg", false);
+			char path[] = "Assests\\audio\\nonono.ogg";
+			audioManager->Play2DSound(path , false);
 		}
 		if (glm::distance(player->gameObject->transform.position, mazeGenerator.GetFinishPosition()) <= 0.5f)
 		{
@@ -388,7 +450,7 @@ int main()
 						HitInfo hit = player->IsColliding(boxCollider);
 						if (hit.isColliding == true)
 						{
-							player->gameObject->transform.Translate(-playerLeft*Time::GetDeltaTime()*player->movementSpeed);
+							player->gameObject->transform.Translate(-playerLeft * Time::GetDeltaTime()*player->movementSpeed);
 							player->UpdateCollider();
 						}
 					}
@@ -400,7 +462,7 @@ int main()
 					vec3 playerFront = fpsCam.GetCameraFront();
 					playerFront.y = 0;
 					vec3 playerLeft = glm::cross(VECTOR_UP, playerFront);
-					player->gameObject->transform.Translate(-playerLeft*Time::GetDeltaTime()*player->movementSpeed);
+					player->gameObject->transform.Translate(-playerLeft * Time::GetDeltaTime()*player->movementSpeed);
 					player->gameObject->transform.Rotate(vec3(Time::GetDeltaTime() * player->turnSpeed, 0, 0));
 					player->UpdateCollider();
 					for (BoxCollider boxCollider : mazeBoxexColliders)
@@ -426,7 +488,7 @@ int main()
 						HitInfo hit = player->IsColliding(boxCollider);
 						if (hit.isColliding == true)
 						{
-							player->gameObject->transform.Translate(-playerFront*Time::GetDeltaTime()*player->movementSpeed);
+							player->gameObject->transform.Translate(-playerFront * Time::GetDeltaTime()*player->movementSpeed);
 							player->UpdateCollider();
 						}
 					}
@@ -436,7 +498,7 @@ int main()
 					//fpsCam.ProcessKeyboard(BACKWARD, Time::GetDeltaTime()*camFlySpeed);
 					vec3 playerFront = fpsCam.GetCameraFront();
 					playerFront.y = 0;
-					player->gameObject->transform.Translate(-playerFront*Time::GetDeltaTime()*player->movementSpeed);
+					player->gameObject->transform.Translate(-playerFront * Time::GetDeltaTime()*player->movementSpeed);
 					player->gameObject->transform.Rotate(vec3(Time::GetDeltaTime() * player->turnSpeed, 0, 0));
 					player->UpdateCollider();
 					for (BoxCollider boxCollider : mazeBoxexColliders)
@@ -538,8 +600,8 @@ int main()
 					HitInfo hit = obs.IsColliding(player->GetBoxCollider());
 					if (hit.isColliding == true)
 					{
-
-						audioManager->Play2DSound("Assests\\audio\\boom1.ogg", false);
+						char path[] = "Assests\\audio\\boom1.ogg";
+						audioManager->Play2DSound(path , false);
 						deathPosition = player->gameObject->transform.position;
 						//player->gameObject->transform.position = mazeGenerator.GetStartPosition() + vec3(-5, 0, 0);
 						player->playerState = PlayerState::DEAD;
@@ -578,7 +640,7 @@ int main()
 
 				if (Input::GetKey(GLFW_KEY_W))
 				{
-					freeCam.ProcessKeyboard(Camera_Movement::FORWARD,Time::GetDeltaTime()*10);
+					freeCam.ProcessKeyboard(Camera_Movement::FORWARD, Time::GetDeltaTime() * 10);
 				}
 				if (Input::GetKey(GLFW_KEY_S))
 				{
@@ -589,14 +651,14 @@ int main()
 				{
 					freeCam.ProcessKeyboard(Camera_Movement::LEFT, Time::GetDeltaTime() * 10);
 				}
-				if (Input::GetKey(GLFW_KEY_D) )
+				if (Input::GetKey(GLFW_KEY_D))
 				{
 					freeCam.ProcessKeyboard(Camera_Movement::RIGHT, Time::GetDeltaTime() * 10);
 				}
 				if (Input::GetKey(GLFW_KEY_Q))
 				{
 					freeCam.ProcessKeyboard(Camera_Movement::UPWARD, Time::GetDeltaTime() * 10);
-				}	
+				}
 				if (Input::GetKey(GLFW_KEY_E))
 				{
 					freeCam.ProcessKeyboard(Camera_Movement::DOWNWARD, Time::GetDeltaTime() * 10);
@@ -628,7 +690,7 @@ int main()
 		if (player->playerState == PlayerState::DEAD)
 		{
 			player->gameObject->transform.position =
-				glm::mix(deathPosition, startPosition, returnToStartPositionPercent/timeToReturnToStartPosition);
+				glm::mix(deathPosition, startPosition, returnToStartPositionPercent / timeToReturnToStartPosition);
 			returnToStartPositionPercent += Time::GetDeltaTime();
 			fpsCam.SetCameraPosition(player->gameObject->transform.position);
 			if (glm::distance(player->gameObject->transform.position, startPosition) < 2.0f)
@@ -641,7 +703,8 @@ int main()
 		{
 			if (playedOnce == false)
 			{
-				audioManager->Play2DSound("Assests\\Audio\\tada.wav", false);
+				char path[] = "Assests\\Audio\\tada.wav";
+				audioManager->Play2DSound(path, false);
 				playedOnce = true;
 			}
 		}
@@ -710,18 +773,18 @@ int main()
 			inc = true;
 		}
 		percent += (inc) ? Time::GetDeltaTime() : -Time::GetDeltaTime();
-		for (int i = 0; i < mazeBoxes.size(); ++i)
-		{
-			//	mazeBoxes[i]->transform.scale.y = glm::mix(scales[i].first, scales[i].second, percent);
-			//  mazeBoxes[i]->transform.scale.y += sin(glfwGetTime()* ((float)(i+1) / (float)(mazeBoxes.size()+1))*5)*Time::GetDeltaTime()*2;
-			//mazeBoxes[i]->transform.scale.y += glm::sin(Time::GetTime()*(i+1)/(mazeBoxes.size()))*Time::GetDeltaTime()*3;
-			//	mazeBoxes[i]->transform.scale.y = glm::clamp(mazeBoxes[i]->transform.scale.y, 0.7f, 20.0f);
-		}
+		//for (int i = 0; i < mazeBoxes.size(); ++i)
+		//{
+		//	//	mazeBoxes[i]->transform.scale.y = glm::mix(scales[i].first, scales[i].second, percent);
+		//	//  mazeBoxes[i]->transform.scale.y += sin(glfwGetTime()* ((float)(i+1) / (float)(mazeBoxes.size()+1))*5)*Time::GetDeltaTime()*2;
+		//	//mazeBoxes[i]->transform.scale.y += glm::sin(Time::GetTime()*(i+1)/(mazeBoxes.size()))*Time::GetDeltaTime()*3;
+		//	//	mazeBoxes[i]->transform.scale.y = glm::clamp(mazeBoxes[i]->transform.scale.y, 0.7f, 20.0f);
+		//}
 		renderer->BindGameObjectData(tmpBox, shader);
 		for (auto box : mazeBoxes)
 		{
 			float distance = glm::distance(box->transform.position, player->gameObject->transform.position);
-			if (distance < 30 || camMode==CameraMode::FREE_MODE )
+			if (distance < 30 || camMode == CameraMode::FREE_MODE)
 				renderer->ApplyTransformationAndDraw(box, shader);
 		}
 		renderer->UnbindCurrentGameObjectData(shader);
